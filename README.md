@@ -43,7 +43,7 @@ A comprehensive event booking backend built with Payload CMS that supports multi
 1. Clone the repository
 2. Install dependencies:
    ```
-   pnpm install
+   npm install
    ```
 3. Set up environment variables:
    - Copy `.env.example` to `.env`
@@ -54,7 +54,7 @@ A comprehensive event booking backend built with Payload CMS that supports multi
 
 1. Start the development server:
    ```
-   pnpm dev
+   npm run dev
    ```
 2. Access the admin panel at `http://localhost:3000/admin`
 
@@ -63,7 +63,7 @@ A comprehensive event booking backend built with Payload CMS that supports multi
 To populate the database with test data:
 
 ```
-pnpm seed
+node mongodb-direct-seed.js
 ```
 
 This will create:

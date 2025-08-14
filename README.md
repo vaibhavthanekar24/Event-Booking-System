@@ -67,6 +67,7 @@ pnpm seed
 ```
 
 This will create:
+
 - 2 tenants (TechConf Inc. and MusicFest LLC)
 - Admin, organizer, and attendee users for each tenant
 - Sample events with various booking statuses
@@ -74,11 +75,13 @@ This will create:
 ### Test Accounts
 
 #### TechConf Inc.
+
 - Admin: admin1@techconf.com / password123
 - Organizer: organizer1@techconf.com / password123
 - Attendees: attendee1@techconf.com through attendee10@techconf.com / password123
 
 #### MusicFest LLC
+
 - Admin: admin2@musicfest.com / password123
 - Organizer: organizer2@musicfest.com / password123
 - Attendees: attendee1@musicfest.com through attendee10@musicfest.com / password123

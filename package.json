@@ -13,10 +13,7 @@
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
-    "seed": "cross-env NODE_OPTIONS=--no-deprecation node seed-cli-direct.js",
-    "test": "pnpm run test:int && pnpm run test:e2e",
-    "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --no-experimental-strip-types\" pnpm exec playwright test",
-    "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
+    "seed": "cross-env NODE_OPTIONS=--no-deprecation node seed-cli-direct.js"
   },
   "dependencies": {
     "@payloadcms/db-mongodb": "3.51.0",
@@ -38,22 +35,14 @@
     "ts-node": "^10.9.2"
   },
   "devDependencies": {
-    "@playwright/test": "1.54.1",
-    "@testing-library/react": "16.3.0",
     "@types/node": "^22.5.4",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
-    "@vitejs/plugin-react": "4.5.2",
     "eslint": "^9.16.0",
     "eslint-config-next": "15.4.4",
-    "jsdom": "26.1.0",
-    "playwright": "1.54.1",
-    "playwright-core": "1.54.1",
     "prettier": "^3.4.2",
     "tsx": "^4.19.2",
-    "typescript": "5.7.3",
-    "vite-tsconfig-paths": "5.1.4",
-    "vitest": "3.2.3"
+    "typescript": "5.7.3"
   },
   "engines": {
     "node": "^18.20.2 || >=20.9.0",

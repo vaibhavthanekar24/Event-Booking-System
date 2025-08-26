@@ -118,7 +118,7 @@ export const Bookings: CollectionConfig = {
       filterOptions: ({ req }) => {
         // Only show events from the same tenant
         if (!req.user?.tenant) return { tenant: { equals: null } }
-        
+
         const tenantId = typeof req.user.tenant === 'object' ? req.user.tenant.id : req.user.tenant
         return {
           tenant: {
@@ -136,7 +136,7 @@ export const Bookings: CollectionConfig = {
       filterOptions: ({ req }) => {
         // Only show users from the same tenant
         if (!req.user?.tenant) return { tenant: { equals: null } }
-        
+
         const tenantId = typeof req.user.tenant === 'object' ? req.user.tenant.id : req.user.tenant
         return {
           tenant: {
@@ -185,7 +185,7 @@ export const Bookings: CollectionConfig = {
       filterOptions: ({ req }) => {
         // Only show tenant that the user belongs to
         if (!req.user?.tenant) return { id: { equals: null } }
-        
+
         const tenantId = typeof req.user.tenant === 'object' ? req.user.tenant.id : req.user.tenant
         return {
           id: {
@@ -200,7 +200,8 @@ export const Bookings: CollectionConfig = {
       async ({ req, data, operation }) => {
         // Ensure bookings are created within the user's tenant
         if (req.user?.tenant) {
-          const tenantId = typeof req.user.tenant === 'object' ? req.user.tenant.id : req.user.tenant
+          const tenantId =
+            typeof req.user.tenant === 'object' ? req.user.tenant.id : req.user.tenant
           data.tenant = tenantId
         }
 
@@ -254,8 +255,15 @@ export const Bookings: CollectionConfig = {
       async ({ req, doc, operation, previousDoc }) => {
         const { payload } = req
 
+        console.log('=== BOOKING AFTER CHANGE HOOK ===')
+        console.log('Operation:', operation)
+        console.log('Document ID:', doc.id)
+        console.log('Document tenant:', doc.tenant)
+        console.log('Document tenant type:', typeof doc.tenant)
+
         // Create notification and booking log
         if (operation === 'create') {
+          console.log('Creating notification and booking log for new booking')
           // Create notification based on status
           let notificationType = ''
           let notificationTitle = ''
@@ -268,7 +276,8 @@ export const Bookings: CollectionConfig = {
             collection: 'events',
             id: doc.event,
           })
-
+          console.log('Event details:', event)
+          console.log('doc.status:', doc.status)
           if (doc.status === 'confirmed') {
             notificationType = 'booking_confirmed'
             notificationTitle = 'Booking Confirmed'
@@ -283,19 +292,40 @@ export const Bookings: CollectionConfig = {
             logNote = 'Booking was automatically waitlisted due to event being at capacity.'
           }
 
+          // Get valid tenant ID
+          const tenantId = typeof doc.tenant === 'object' ? doc.tenant.id : doc.tenant
+          console.log('Tenant ID for notification:', tenantId)
+          console.log('Original tenant value:', doc.tenant)
+
           // Create notification
-          await payload.create({
-            collection: 'notifications',
-            data: {
-              user: doc.user,
-              booking: doc.id,
-              type: notificationType,
-              title: notificationTitle,
-              message: notificationMessage,
-              read: false,
-              tenant: doc.tenant,
-            },
+          console.log('Creating notification with data:', {
+            user: doc.user,
+            booking: doc.id,
+            type: notificationType,
+            title: notificationTitle,
+            message: notificationMessage,
+            tenant: tenantId,
           })
+
+          try {
+            await payload.create({
+              collection: 'notifications',
+              data: {
+                user: doc.user,
+                booking: doc.id,
+                type: notificationType,
+                title: notificationTitle,
+                message: notificationMessage,
+                read: false,
+                tenant: tenantId,
+              },
+              req, // Pass the original req for validation context
+              overrideAccess: true, // Bypass if needed (assuming similar restrictions)
+            })
+            console.log('Notification created successfully')
+          } catch (error) {
+            console.error('Error creating notification:', error)
+          }
 
           // Create booking log
           await payload.create({
@@ -306,13 +336,16 @@ export const Bookings: CollectionConfig = {
               user: doc.user,
               action: logAction,
               note: logNote,
-              tenant: doc.tenant,
+              tenant: tenantId, // Use the same valid tenant ID
             },
+            req, // Pass the original req for validation context
+            overrideAccess: true, // Bypass if needed (assuming similar restrictions)
           })
         }
 
         // Handle status changes for existing bookings
         if (operation === 'update' && previousDoc.status !== doc.status) {
+          console.log('Operation:', operation)
           // Get event details
           const event = await payload.findByID({
             collection: 'events',
@@ -321,6 +354,9 @@ export const Bookings: CollectionConfig = {
 
           // Handle cancellation and promote from waitlist
           if (previousDoc.status === 'confirmed' && doc.status === 'canceled') {
+            // Get valid tenant ID
+            const tenantId = typeof doc.tenant === 'object' ? doc.tenant.id : doc.tenant
+
             // Create notification for cancellation
             await payload.create({
               collection: 'notifications',
@@ -331,8 +367,10 @@ export const Bookings: CollectionConfig = {
                 title: 'Booking Canceled',
                 message: `Your booking for ${event.title} has been canceled.`,
                 read: false,
-                tenant: doc.tenant,
+                tenant: tenantId,
               },
+              req, // Pass the original req for validation context
+              overrideAccess: true, // Bypass if needed (assuming similar restrictions)
             })
 
             // Create booking log for cancellation
@@ -344,8 +382,10 @@ export const Bookings: CollectionConfig = {
                 user: doc.user,
                 action: 'cancel_confirmed',
                 note: 'Confirmed booking was canceled.',
-                tenant: doc.tenant,
+                tenant: tenantId,
               },
+              req, // Pass the original req for validation context
+              overrideAccess: true, // Bypass if needed (assuming similar restrictions)
             })
 
             // Find oldest waitlisted booking for this event
@@ -392,8 +432,10 @@ export const Bookings: CollectionConfig = {
                   title: 'Promoted from Waitlist',
                   message: `Great news! You've been promoted from the waitlist for ${event.title}.`,
                   read: false,
-                  tenant: doc.tenant,
+                  tenant: tenantId,
                 },
+                req, // Pass the original req for validation context
+                overrideAccess: true, // Bypass if needed (assuming similar restrictions)
               })
 
               // Create booking log for promotion
@@ -405,8 +447,10 @@ export const Bookings: CollectionConfig = {
                   user: bookingToPromote.user,
                   action: 'promote_from_waitlist',
                   note: 'Booking was promoted from waitlist due to a cancellation.',
-                  tenant: doc.tenant,
+                  tenant: tenantId,
                 },
+                req, // Pass the original req for validation context
+                overrideAccess: true, // Bypass if needed (assuming similar restrictions)
               })
             }
           }

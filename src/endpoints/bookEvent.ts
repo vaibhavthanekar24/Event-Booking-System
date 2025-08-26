@@ -3,16 +3,23 @@ import { Response, NextFunction } from 'express'
 
 const bookEvent = async (req: PayloadRequest, res: Response, next: NextFunction) => {
   try {
+    console.log('=== BOOK EVENT ENDPOINT CALLED ===')
+    console.log('Request body:', req.body)
+    console.log('User:', req.user ? { id: req.user.id, role: req.user.role, tenant: req.user.tenant } : 'No user')
+    
     // Check if user is authenticated
     if (!req.user) {
+      console.log('Authentication failed: No user found')
       return res.status(401).json({
         message: 'Unauthorized',
       })
     }
 
     const { eventId } = req.body
+    console.log('Event ID from request:', eventId)
 
     if (!eventId) {
+      console.log('Validation failed: No event ID provided')
       return res.status(400).json({
         message: 'Event ID is required',
       })
@@ -33,7 +40,7 @@ const bookEvent = async (req: PayloadRequest, res: Response, next: NextFunction)
     // Check if event belongs to user's tenant
     const userTenantId = typeof req.user.tenant === 'object' ? req.user.tenant.id : req.user.tenant
     const eventTenantId = typeof event.tenant === 'object' ? event.tenant.id : event.tenant
-    
+
     if (eventTenantId !== userTenantId) {
       return res.status(403).json({
         message: 'Access denied',
@@ -96,15 +103,40 @@ const bookEvent = async (req: PayloadRequest, res: Response, next: NextFunction)
 
     // Create the booking
     const tenantId = typeof req.user.tenant === 'object' ? req.user.tenant.id : req.user.tenant
-    const booking = await req.payload.create({
-      collection: 'bookings',
-      data: {
-        event: eventId,
-        user: req.user.id,
-        status,
-        tenant: tenantId,
-      },
+    console.log('Tenant ID for booking:', tenantId)
+    console.log('Tenant type:', typeof req.user.tenant)
+    console.log('Raw tenant value:', req.user.tenant)
+    
+    // Ensure tenant ID is valid before creating booking
+    if (!tenantId) {
+      console.log('ERROR: Invalid tenant ID')
+      return res.status(400).json({
+        message: 'Invalid tenant information',
+      })
+    }
+    
+    console.log('Creating booking with data:', {
+      event: eventId,
+      user: req.user.id,
+      status,
+      tenant: tenantId,
     })
+    
+    try {
+      const booking = await req.payload.create({
+        collection: 'bookings',
+        data: {
+          event: eventId,
+          user: req.user.id,
+          status,
+          tenant: tenantId,
+        },
+      })
+      console.log('Booking created successfully:', booking.id)
+    } catch (error) {
+      console.error('Error creating booking:', error)
+      throw error
+    }
 
     // The hooks in the Bookings collection will handle creating notifications and logs
 

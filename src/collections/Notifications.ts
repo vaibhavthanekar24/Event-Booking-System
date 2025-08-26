@@ -153,7 +153,7 @@ export const Notifications: CollectionConfig = {
       filterOptions: ({ req }) => {
         // Only show tenant that the user belongs to
         if (!req.user?.tenant) return { id: { equals: null } }
-        
+
         const tenantId = typeof req.user.tenant === 'object' ? req.user.tenant.id : req.user.tenant
         return {
           id: {
@@ -168,7 +168,8 @@ export const Notifications: CollectionConfig = {
       ({ req, data }) => {
         // Ensure notifications are created within the user's tenant
         if (req.user?.tenant) {
-          const tenantId = typeof req.user.tenant === 'object' ? req.user.tenant.id : req.user.tenant
+          const tenantId =
+            typeof req.user.tenant === 'object' ? req.user.tenant.id : req.user.tenant
           return {
             ...data,
             tenant: data.tenant || tenantId,

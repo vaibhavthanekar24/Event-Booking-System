@@ -52,8 +52,8 @@ export default buildConfig({
     connectOptions: {
       retryWrites: true,
       w: 'majority',
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+      // Removed deprecated options: useNewUrlParser and useUnifiedTopology
+      // These have no effect in MongoDB Driver 4.0.0+
     },
   }),
   sharp,

@@ -11,6 +11,7 @@ module.exports = {
       PAYLOAD_SECRET: '3b59baf6902a880d643ee5d9',
       DATABASE_URI:
         'mongodb+srv://vaibhavthanekar007_db_user:2Y8dXxMwC9Sy07np@clusterforpayloadcms.oruemqm.mongodb.net/',
+      NEXT_PUBLIC_SERVER_URL: 'https://event-booking-system.vercel.app',
     },
   },
 }

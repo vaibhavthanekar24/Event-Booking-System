@@ -2,10 +2,5 @@
   "version": 2,
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "framework": "nextjs",
-  "env": {
-    "PAYLOAD_SECRET": "@payload_secret",
-    "DATABASE_URI": "@database_uri",
-    "NEXT_PUBLIC_SERVER_URL": "@next_public_server_url"
-  }
+  "framework": "nextjs"
 }

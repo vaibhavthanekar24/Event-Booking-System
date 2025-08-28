@@ -12,6 +12,9 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
+  // Output standalone build for better Vercel compatibility
+  output: 'standalone',
+
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],

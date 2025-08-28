@@ -49,6 +49,12 @@ export default buildConfig({
   },
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
+    connectOptions: {
+      retryWrites: true,
+      w: 'majority',
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    },
   }),
   sharp,
   plugins: [

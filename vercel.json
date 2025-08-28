@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "functions": {
+    "api/index.ts": {
+      "runtime": "nodejs18.x",
+      "memory": 1024
+    }
+  },
+  "routes": [{ "src": "/.*", "dest": "api/index.ts" }],
+  "env": {
+    "PAYLOAD_SECRET": "@payload_secret",
+    "DATABASE_URI": "@database_uri",
+    "NEXT_PUBLIC_SERVER_URL": "@next_public_server_url"
+  }
+}

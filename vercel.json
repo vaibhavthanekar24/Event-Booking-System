@@ -5,10 +5,11 @@
   "framework": "nextjs",
   "functions": {
     "api/index.ts": {
-      "use": "@vercel/node",
-      "memory": 1024
+      "runtime": "nodejs18.x",
+      "memory": 3600
     }
   },
+  "routes": [{ "src": "/.*", "dest": "api/index.ts" }],
   "env": {
     "PAYLOAD_SECRET": "3b59baf6902a880d643ee5d9",
     "DATABASE_URI": "mongodb+srv://vaibhavthanekar007_db_user:2Y8dXxMwC9Sy07np@clusterforpayloadcms.oruemqm.mongodb.net/",

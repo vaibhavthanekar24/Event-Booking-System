@@ -4,7 +4,6 @@
   "framework": "nextjs",
   "functions": {
     "api/index.ts": {
-      "runtime": "nodejs18.x",
       "memory": 1024,
       "maxDuration": 10
     }

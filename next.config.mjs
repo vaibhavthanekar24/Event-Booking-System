@@ -15,6 +15,11 @@ const nextConfig = {
   // Output standalone build for better Vercel compatibility
   output: 'standalone',
 
+  // Optimize for Vercel
+  experimental: {
+    serverComponentsExternalPackages: ['@payloadcms/db-mongodb'],
+  },
+
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],

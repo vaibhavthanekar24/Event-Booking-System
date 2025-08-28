@@ -26,6 +26,12 @@ export const getPayload = async () => {
       secret: process.env.PAYLOAD_SECRET || '',
       local: true,
       mongoURL: process.env.DATABASE_URI || '',
+      mongoOptions: {
+        // Removing deprecated options
+        useNewUrlParser: true,
+        // Explicitly disable deprecated option
+        useUnifiedTopology: false
+      }
     })
   }
 
